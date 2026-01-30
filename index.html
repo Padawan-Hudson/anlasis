@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B站舆情分析工具 (演示版)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+        body { background: #f0f2f5; color: #333; line-height: 1.6; padding: 20px; }
+        .container { max-width: 900px; margin: 30px auto; background: white; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); overflow: hidden; }
+        header { background: linear-gradient(135deg, #00a1d6, #0084b8); color: white; padding: 40px 30px; text-align: center; }
+        h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        .subtitle { font-size: 1.1rem; opacity: 0.9; }
+        .content { padding: 30px; display: flex; flex-wrap: wrap; gap: 30px; }
+        .panel { flex: 1; min-width: 300px; }
+        .panel h2 { color: #00a1d6; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #eee; }
+        .input-area input, .input-area select { width: 100%; padding: 12px 15px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
+        .btn { background: #00a1d6; color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: background 0.3s; margin-top: 10px; }
+        .btn:hover { background: #0077a3; }
+        .result-area { display: none; }
+        .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px; }
+        .stat-card { background: #f8fafc; padding: 20px; border-radius: 8px; text-align: center; border-left: 5px solid #00a1d6; }
+        .stat-card h3 { font-size: 0.9rem; color: #666; margin-bottom: 10px; }
+        .stat-value { font-size: 2rem; font-weight: bold; color: #00a1d6; }
+        .positive { color: #52c41a; }
+        .negative { color: #f5222d; }
+        footer { text-align: center; padding: 20px; color: #888; border-top: 1px solid #eee; margin-top: 30px; }
+        #loading { display: none; text-align: center; padding: 20px; color: #00a1d6; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 B站视频舆情分析工具</h1>
+            <p class="subtitle">输入视频BV号，快速分析评论与弹幕情感倾向 (GitHub Pages 演示版)</p>
+        </header>
+        
+        <div class="content">
+            <section class="panel">
+                <h2>🔍 视频信息</h2>
+                <div class="input-area">
+                    <p><strong>提示：</strong>此版本使用模拟数据演示完整流程。</p>
+                    <input type="text" id="bvid" placeholder="请输入视频BV号，例如：BV1GJ411x7h7" value="BV1GJ411x7h7">
+                    <select id="type">
+                        <option value="both">同时分析评论和弹幕</option>
+                        <option value="comment">仅分析评论</option>
+                        <option value="danmaku">仅分析弹幕</option>
+                    </select>
+                    <button class="btn" id="analyze-btn">🚀 开始舆情分析</button>
+                </div>
+                <div id="loading">
+                    <p>⏳ 正在模拟数据分析过程，请稍候...</p>
+                </div>
+            </section>
+            
+            <section class="panel">
+                <h2>📈 分析结果概览</h2>
+                <div class="result-area" id="result-area">
+                    <p>分析完成后，结果将显示在此处。</p>
+                    <div class="stats">
+                        <div class="stat-card">
+                            <h3>评论总数</h3>
+                            <div class="stat-value" id="stat-comment">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>弹幕总数</h3>
+                            <div class="stat-value" id="stat-danmaku">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>积极情绪</h3>
+                            <div class="stat-value positive" id="stat-positive">0%</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>消极情绪</h3>
+                            <div class="stat-value negative" id="stat-negative">0%</div>
+                        </div>
+                    </div>
+                    <div id="report" style="margin-top: 30px; padding: 20px; background: #f9f9f9; border-radius: 8px;"></div>
+                </div>
+            </section>
+        </div>
+        
+        <footer>
+            <p>✅ 本页面已成功部署在 GitHub Pages | 这是一个功能完整的静态演示工具</p>
+            <p>你的专属网址：<strong>https://padawan-hudson.github.io/anlasis/</strong></p>
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('analyze-btn').addEventListener('click', function() {
+            const bvid = document.getElementById('bvid').value.trim();
+            if (!bvid) {
+                alert('请输入视频BV号！');
+                return;
+            }
+            
+            // 显示加载，隐藏结果
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('result-area').style.display = 'none';
+            
+            // 模拟2秒分析过程
+            setTimeout(function() {
+                // 生成模拟数据
+                const mock = {
+                    comment: Math.floor(Math.random() * 2000) + 1000,
+                    danmaku: Math.floor(Math.random() * 5000) + 2000,
+                    positive: Math.floor(Math.random() * 30) + 60, // 60-90%
+                    negative: Math.floor(Math.random() * 15) + 5   // 5-20%
+                };
+                
+                // 更新页面数据
+                document.getElementById('stat-comment').textContent = mock.comment.toLocaleString();
+                document.getElementById('stat-danmaku').textContent = mock.danmaku.toLocaleString();
+                document.getElementById('stat-positive').textContent = mock.positive + '%';
+                document.getElementById('stat-negative').textContent = mock.negative + '%';
+                
+                // 生成报告
+                document.getElementById('report').innerHTML = `
+                    <h3>📄 模拟分析报告</h3>
+                    <p><strong>分析目标：</strong>视频 ${bvid}</p>
+                    <p><strong>分析时间：</strong>${new Date().toLocaleString('zh-CN')}</p>
+                    <p><strong>核心结论：</strong>观众反馈总体<span style="color: #52c41a; font-weight:bold;">积极</span>，积极情绪占比显著高于消极情绪。</p>
+                    <p><strong>详细说明：</strong>本演示版使用了模拟数据来展示舆情分析工具的完整界面与工作流程。要获取真实B站数据，需部署后端服务。</p>
+                `;
+                
+                // 隐藏加载，显示结果
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('result-area').style.display = 'block';
+                
+                // 滚动到结果区域
+                document.getElementById('result-area').scrollIntoView({ behavior: 'smooth' });
+                
+            }, 2000); // 2秒延迟，模拟分析过程
+        });
+    </script>
+</body>
+</html>
